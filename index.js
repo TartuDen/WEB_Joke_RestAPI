@@ -4,13 +4,23 @@ import express from 'express';
 
 const app = express();
 const port = 8080;
+app.use(bodyParser.urlencoded({extended: true}));
 
+/**
+ * Route to get a random joke.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 app.get("/random",(req,res)=>{
     let rndJokeIdx = Math.floor(Math.random()*jokes.length)
     res.status(200).json(jokes[rndJokeIdx])
 })
 
-// Define a route with a route parameter
+/**
+ * Route to get a joke by index.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 app.get("/jokes/:index", (req, res) => {
     // Extract the index from the request parameters
     let index = (req.params.index);
@@ -30,6 +40,11 @@ app.get("/jokes/:index", (req, res) => {
     }
 });
 
+/**
+ * Route to filter jokes by type.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
 app.get("/filter", (req,res)=>{
     let type = req.query.type
     console.log(type)
@@ -39,10 +54,40 @@ app.get("/filter", (req,res)=>{
     }
 })
 
+/**
+ * Route to add a new joke.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+app.post("/jokes",(req,res)=>{
+    let text = req.body["text"];
+    let type = req.body["type"];
+    let newJoke = {
+        id: jokes.length+1,
+        jokeText: text,
+        jokeType: type
+    }
+    console.log(newJoke)
+    jokes.push(newJoke);
+    res.status(201).json(newJoke)
+})
+
+
+
+app.put("/jokes/:index",(req,res)=>{
+    let idx = req.params.index;
+    const {text, type}= req.body;
+    
+})
+
+/**
+ * Start the Express server.
+ */
 app.listen(port,(err)=>{
     if(err) throw err;
     console.log("server is running on port: "+port);
 })
+
 
 var jokes = [
     {
