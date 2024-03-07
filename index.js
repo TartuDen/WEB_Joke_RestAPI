@@ -118,23 +118,33 @@ app.patch("/jokes/:id", (req, res) => {
 })
 
 /**
- * Route to delete a joke by id or all jokes with the admin key.
+ * Route to delete a joke by id.
  * @param {Object} req - The request object.
  * @param {Object} res - The response object.
  */
 app.delete("/jokes/:id", (req, res) => {
     const idToDelete = parseInt(req.params.id);
-    const selectorAll = req.params.id
-    const receivedAdminKey = req.headers["admin_key"];
     let idxToDelete = jokes.findIndex(joke => joke.id === idToDelete);
     if (idxToDelete !== -1) {
         jokes.splice(idxToDelete, 1);
         res.status(200).json({ message: `joke with id ${idToDelete} was successfully deleted` });
-    } else if (selectorAll === "all" && receivedAdminKey === ADMIN_KEY) {
-        jokes = {};
-        res.status(200).json({ message: `all jokes were successfully deleted ${jokes}` });
-    } else {
+    }  else {
         res.status(404).json("id not found")
+    }
+})
+
+/**
+ * Route to delete all jokes with the admin key.
+ * @param {Object} req - The request object.
+ * @param {Object} res - The response object.
+ */
+app.delete("/all",(req,res)=>{
+    const receivedAdminKey = req.headers["admin_key"];
+    if(receivedAdminKey === ADMIN_KEY){
+        jokes = [];
+        res.status(200).json({message: "ok"});
+    }else{
+        res.status(404).json({message: "you are not authorized to do that!"})
     }
 })
 
